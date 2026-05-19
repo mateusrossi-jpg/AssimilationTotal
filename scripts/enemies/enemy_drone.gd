@@ -9,6 +9,7 @@ var current_health: float
 var player: Node2D
 
 func _ready() -> void:
+	add_to_group("enemies")
 	current_health = max_health
 	player = get_tree().get_first_node_in_group("player")
 
@@ -19,6 +20,13 @@ func _physics_process(_delta: float) -> void:
 	var direction := (player.global_position - global_position).normalized()
 	velocity = direction * move_speed
 	move_and_slide()
+
+	for index in get_slide_collision_count():
+		var collision := get_slide_collision(index)
+		var collider := collision.get_collider()
+
+		if collider != null and collider.has_method("take_damage"):
+			collider.take_damage(contact_damage)
 
 func take_damage(amount: float) -> void:
 	current_health -= amount
